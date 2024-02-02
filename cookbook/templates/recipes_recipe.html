@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<h3>{{ recipe.name }}</h3>
+{{ recipe.servings }} servings
+<ul>
+    {% for ingredient in recipe.ingredients %}
+    <li>
+        {{ ingredient.amount | trimDecimals }}
+        {{ ingredient.unit }}
+        {{ ingredient.ingredient.name }}
+    </li>
+    {% endfor %}
+</ul>
+{{ recipe.instructions }}
+{% if recipe.owner == current_user %}
+<br><br>
+<a href="{{ url_for('recipes.edit', recipe_id=recipe.id) }}">Edit</a>
+{% endif %}
+
+{% endblock %}

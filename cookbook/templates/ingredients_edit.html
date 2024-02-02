@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<h3>Edit ingredient</h3>
+<form method="post" action="" class="flex" novalidate>
+    {{ form.hidden_tag() }}
+    {{ form.name(autocomplete="off", autofocus=true,
+        class="form-error" if form.name.errors,
+        onfocus="var temp_value=this.value;
+            this.value='';
+            this.value=temp_value") }}
+    {{ form.submit(value="Save", class="btn") }}
+</form>
+<button class="btn btn-delete btn-full" onClick="confirmDelete('{{ ingredient.name }}',
+    '{{ url_for('ingredients.delete', ingredient_id=ingredient.id) }}')">
+    Delete ingredient
+</button>
+
+{% endblock %}
