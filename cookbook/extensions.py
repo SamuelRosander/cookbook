@@ -7,7 +7,7 @@ db = SQLAlchemy()
 login_manager = LoginManager()
 
 
-def trimDecimals(num):
+def trim_decimals(num):
     if num is None:
         return ""
     inum = int(num)

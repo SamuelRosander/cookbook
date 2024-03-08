@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+{% block body %}
+
+{% for meal in meals if not meal.archived %}
+<a href="{{ url_for('recipes.recipe', recipe_id=meal.recipe_id) }}">
+    {{ meal.recipe.name }}
+</a>
+<br>
+{% endfor %}
+
+<a href="#" class="btn">Generate shopping list</a>
+
+{% endblock %}

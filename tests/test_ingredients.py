@@ -15,8 +15,7 @@ def test_home(client, app):
 
 
 def test_add(client, app):
-    response = client.post(
-        "/ingredients/", data={"name": "testingredient1"})
+    response = client.post("/ingredients/", data={"name": "testingredient1"})
 
     assert response.status_code == 401
 
@@ -39,52 +38,53 @@ def test_edit(client, app):
 
         client.post("/ingredients/", data={"name": "testingredient1"})
 
-        response = client.get("/ingredients/1")
+        response = client.get("/ingredients/1/edit/")
         assert response.status_code == 200
         assert b"<h3>Edit ingredient</h3>" in response.data
         assert b'value="testingredient1"' in response.data
 
-        client.post("/ingredients/1", data={"name": "testingredient1edit"})
+        client.post("/ingredients/1/edit/",
+                    data={"name": "testingredient1edit"})
 
-        response = client.get("/ingredients/1")
+        response = client.get("/ingredients/1/edit/")
         assert b'value="testingredient1edit"' in response.data
-        assert client.get("/ingredients/2").status_code == 404
+        assert client.get("/ingredients/2/edit/").status_code == 404
 
         logout_user()
 
-        response = client.get("/ingredients/1")
+        response = client.get("/ingredients/1/edit/")
         assert response.status_code == 401
 
-        client.post("/ingredients/1", data={"name": "testingredient1edit2"})
+        client.post("/ingredients/1/edit/",
+                    data={"name": "testingredient1edit2"})
 
-        response = client.get("/ingredients/1")
+        response = client.get("/ingredients/1/edit/")
         assert response.status_code == 401
 
 
 def test_delete(client, app):
     with app.test_request_context():
         login_user(db.session.get(User, 1))
-        client.post(
-            "/ingredients/", data={"name": "testingredient1"})
-        client.post(
-            "/ingredients/", data={"name": "testingredient2"})
+        client.post("/ingredients/", data={"name": "testingredient1"})
+        client.post("/ingredients/", data={"name": "testingredient2"})
 
         client.post(
-            "/recipes/add",
-            data={"name": "testrecipe1", "ingredients-0-ingredient": 1})
+            "/recipes/add/",
+            data={"name": "testrecipe1",
+                  "ingredients-0-ingredient": "testingredient1"})
 
-        assert client.get("/ingredients/3/delete").status_code == 404
+        assert client.get("/ingredients/3/delete/").status_code == 404
 
-        response = client.get("/ingredients/1/delete")
+        response = client.get("/ingredients/1/delete/")
         assert response.status_code == 303
         assert Ingredient.query.count() == 2
 
-        response = client.get("/ingredients/2/delete")
+        response = client.get("/ingredients/2/delete/")
         assert response.status_code == 303
         assert Ingredient.query.count() == 1
 
         logout_user()
 
-        response = client.get("/ingredients/2/delete")
+        response = client.get("/ingredients/2/delete/")
         assert response.status_code == 401
         assert Ingredient.query.count() == 1

@@ -28,7 +28,7 @@
                     Ingredients
                     <i class='bx bx-baguette'></i>
                 </a>
-                <a href="#">
+                <a href="{{ url_for('menu.home') }}">
                     My menu
                     <i class='bx bx-food-menu'></i>
                 </a>
@@ -74,7 +74,7 @@
                     {% for category, message in messages %}
                     <div class="flash {{ category }}">
                         <span>
-                            {{ message }}
+                            {{ message | safe}}
                         </span>
                         <span class="flash-close" onClick="dismiss(this)">
                             &times;
@@ -83,9 +83,7 @@
                     {% endfor %}
                 {% endif %}
             {% endwith %}
-            {% filter indent(width=12) %}
-                {% block body %}{% endblock %}
-            {% endfilter %}
+            {% block body %}{% endblock %}
         </div>
     </div>
 

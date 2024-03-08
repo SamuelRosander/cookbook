@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<div class="heading-grid">
+    <a href="{{ url_for('recipes.home')}}" class="btn icon">
+        <i class='bx bx-arrow-back'></i>
+    </a>
+    <h3>{{ recipe.name }}</h3>
+    {% if recipe.owner == current_user %}
+    <a href="{{ url_for('recipes.edit', recipe_id=recipe.id) }}" 
+        class="btn icon">
+        <i class='bx bx-edit-alt' ></i>
+    </a>
+    {% else %}
+    <div></div>
+    {% endif %}
+</div>
+<div class="subtitle">
+    By {{ recipe.owner.email }}
+</div>
+{{ recipe.servings }} servings
+<ul>
+    {% for ingredient in recipe.ingredients %}
+    <li>
+        {{ ingredient.amount | trim_decimals }}
+        {{ ingredient.unit }}
+        {{ ingredient.ingredient.name }}
+    </li>
+    {% endfor %}
+</ul>
+{% if recipe.instructions %}
+{% for line in recipe.instructions.split('\n') %}
+<div class="instruction-line">
+    <input type="checkbox" id="instruction-{{ loop.index }}">
+    <label for="instruction-{{ loop.index }}">{{ line }}</label>
+</div>
+{% endfor %}
+{% endif %}
+
+{% endblock %}

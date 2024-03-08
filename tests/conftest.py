@@ -1,7 +1,6 @@
 import pytest
 from cookbook import create_app, db
 from cookbook.models import User
-from flask_login import login_user
 
 
 @pytest.fixture()

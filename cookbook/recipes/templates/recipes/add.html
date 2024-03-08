@@ -1,0 +1,90 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<div class="heading-grid">
+    <a href="{{ url_for('recipes.home') }}" class="btn icon">
+        <i class='bx bx-arrow-back'></i>
+    </a>
+    <h3>Add recipe</h3>
+    <div></div>
+</div>
+
+<form method="post" action="" novalidate>
+    {{ form.hidden_tag() }}
+    {{ form.name.label }}
+    {{ form.name(autocomplete="off",
+        class="form error" if form.name.errors else "form") }}
+    <div class="grid-2">
+        {{ form.servings.label }}
+        {{ form.cooking_time.label }}
+        {{ form.servings(class="form error" if form.servings.errors else "form") }}
+        <div>
+            {{ form.cooking_time(class="form error"
+                                 if form.cooking_time.errors else "form") }}
+            <span class="form-floating-unit">minutes</span>
+        </div>
+    </div>
+    Ingredients
+    <div id="ingredient-wrapper">
+    {% for ingredient in form.ingredients %}
+    {{ ingredient.hidden_tag() }}
+    {{ ingredient.amount(placeholder="0", class="form small mb-0") }}
+    {{ ingredient.unit(placeholder="unit", class="form small mb-0") }}
+    {{ ingredient.ingredient(placeholder="Ingredient",
+        list="ingredients-list", autocomplete="off",
+        class="form error mb-0" if form.ingredients.errors else "form mb-0") }}
+    {% endfor %}
+        <datalist id="ingredients-list">
+            {% for ingredient in ingredients %}
+            <option value="{{ ingredient.name }}"></option>
+            {% endfor %}
+        </datalist>
+    </div>
+    <button class="btn" id="add-ingredient-btn">Add ingredient</button>
+    {{ form.instructions.label }}
+    <textarea class="form" id="instructions" name="instructions"></textarea>
+    {{ form.public.label() }}
+    <span class="checkbox-wrapper">
+        {{ form.public() }}
+        <label for="public"></label>
+    </span>
+    {{ form.submit(class="btn topmargin") }}
+</form>
+
+<script>
+    window.onload = function() {
+        let addButton = document.getElementById("add-ingredient-btn");
+        addButton.addEventListener("click", function(e) {
+            e.preventDefault();            
+            addIngredientField()
+        });
+
+        function addIngredientField(e) {
+            let wrapper = document.getElementById("ingredient-wrapper");
+            let allIngredientsField = wrapper.getElementsByTagName('input');
+            let ids = []
+            for (let i=0; i<allIngredientsField.length; i++) {
+                ids.push(
+                    parseInt(allIngredientsField[i].name.split('-')[1]));
+            }
+            let newFieldName = `ingredients-${Math.max(...ids) + 1}`;
+            let csfr_token = document.getElementById("csrf_token").value
+            wrapper.insertAdjacentHTML('beforeend',`
+            <input id="${newFieldName}-csrf_token"
+                name="${newFieldName}-csrf_token" type="hidden"
+                value="${csfr_token}">
+            <input class="form small mb-0" id="${newFieldName}-amount"
+                name="${newFieldName}-amount" placeholder="0"
+                type="text" value="" autocomplete="off">
+            <input class="form small mb-0" id="${newFieldName}-unit"
+                name="${newFieldName}-unit" placeholder="unit"
+                type="text" value="" autocomplete="off">
+            <input class="form mb-0" id="${newFieldName}-ingredient"
+                list="ingredients-list" name="${newFieldName}-ingredient"
+                placeholder="Ingredient" type="text" value="">
+            `);
+        }
+    } 
+</script>
+
+{% endblock %}
