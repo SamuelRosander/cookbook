@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<h3>My menu</h3>
+
+{% for meal in meals if not meal.archived %}
+<a href="{{ url_for('recipes.recipe', recipe_id=meal.recipe_id) }}">
+    {{ meal.recipe.name }}
+</a>
+<a href="{{ url_for('menu.delete', meal_id=meal.id) }}">Delete</a>
+<br>
+{% endfor %}
+
+{% endblock %}

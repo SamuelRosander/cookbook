@@ -1,0 +1,124 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<div class="heading-grid">
+    <a href="{{ url_for('recipes.home') }}" class="btn icon">
+        <i class='bx bx-arrow-back'></i>
+    </a>
+    <h3>Add recipe</h3>
+    <div></div>
+</div>
+
+<form method="post" action="" novalidate>
+    <button type="submit" disabled class="hidden"></button>
+    {{ form.hidden_tag() }}
+    {{ form.name.label }}
+    {{ form.name(autocomplete="off",
+        class="form error" if form.name.errors else "form") }}
+    <div class="grid-2">
+        {{ form.servings.label }}
+        {{ form.cooking_time.label }}
+        {{ form.servings(class="form error" 
+            if form.servings.errors else "form") }}
+        <div class="relative">
+            {{ form.cooking_time(class="form error" 
+                if form.cooking_time.errors else "form") }}
+            <span class="form-floating-unit">minutes</span>
+        </div>
+    </div>
+    Ingredients
+    <div id="ingredient-wrapper">
+    {% for ingredient in form.ingredients %}
+    {{ ingredient.hidden_tag() }}
+    {{ ingredient.amount(placeholder="0", class="form small mb-0",
+        autocomplete="off") }}
+    {{ ingredient.unit(placeholder="unit", class="form small mb-0",
+        autocomplete="off") }}
+    {{ ingredient.ingredient(placeholder="Ingredient",
+        list="ingredients-list", autocomplete="off",
+        class="form error mb-0" if form.ingredients.errors else "form mb-0") }}
+    {% endfor %}
+    <datalist id="ingredients-list">
+        {% for ingredient in ingredients %}
+        <option value="{{ ingredient.name }}"></option>
+        {% endfor %}
+    </datalist>
+    </div>
+    <button type="button" class="btn" id="add-ingredient-btn">
+        Add ingredient</button>
+    {{ form.instructions.label }}
+    <textarea class="form" id="instructions"
+        name="instructions">{{ form.instructions.data 
+                                if form.instructions.data }}</textarea>
+    {{ form.public() }}
+    {{ form.public.label() }}
+    {{ form.submit(class="btn") }}
+</form>
+
+<script>
+    window.onload = function() {
+        let addButton = document.getElementById("add-ingredient-btn");
+        addButton.addEventListener("click", function(e) {
+            e.preventDefault();            
+            addIngredientField()
+        });
+
+        function getHighestIngredientFieldID() {
+            let wrapper = document.getElementById("ingredient-wrapper");
+            let allIngredientsField = wrapper.getElementsByTagName('input');
+            let ids = [];
+
+            for (let i=0; i<allIngredientsField.length; i++) {
+                ids.push(
+                    parseInt(allIngredientsField[i].name.split('-')[1]));
+            }
+            return Math.max(...ids);
+        }
+
+        function checkEventKey(e) {
+            if (e.key == 'Enter') {
+                addIngredientField();
+            }   
+        }
+
+        function setEnterListener() {
+            let newId = getHighestIngredientFieldID();
+            for (let i=0; i<newId; i++) {
+                let inputField = document.getElementById(
+                    `ingredients-${i}-ingredient`);
+                inputField.removeEventListener("keydown", checkEventKey);
+            }
+            let inputField = document.getElementById(
+                `ingredients-${newId}-ingredient`);
+            inputField.addEventListener("keydown", checkEventKey);
+        } 
+
+        setEnterListener();
+
+        function addIngredientField(e) {
+            let wrapper = document.getElementById("ingredient-wrapper");
+            let newId = getHighestIngredientFieldID() + 1;
+            let newFieldName = `ingredients-${newId}`;
+            let csfr_token = document.getElementById("csrf_token").value
+            wrapper.insertAdjacentHTML('beforeend',`
+            <input id="${newFieldName}-csrf_token"
+                name="${newFieldName}-csrf_token" type="hidden"
+                value="${csfr_token}">
+            <input class="form small mb-0" id="${newFieldName}-amount"
+                name="${newFieldName}-amount" placeholder="0"
+                type="text" value="" autocomplete="off">
+            <input class="form small mb-0" id="${newFieldName}-unit"
+                name="${newFieldName}-unit" placeholder="unit"
+                type="text" value="" autocomplete="off">
+            <input class="form mb-0" id="${newFieldName}-ingredient"
+                list="ingredients-list" name="${newFieldName}-ingredient"
+                placeholder="Ingredient" type="text" value="">
+            `);
+
+            setEnterListener();
+            document.getElementById(`${newFieldName}-amount`).focus();
+        }
+    } 
+</script>
+
+{% endblock %}

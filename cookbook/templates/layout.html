@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' 
+        rel='stylesheet'>
+    <link rel="stylesheet" href="{{ url_for('static',
+        filename='style.css') }}">
+    <title>CookBook</title>
+</head>
+
+<body>
+    <header class="header">
+        <div class="wrapper">
+            <a href="{{ url_for('main.index') }}" class="logo">CookBook</a>
+
+            <i class='bx bx-menu' id="menu-icon" onClick="toggleMenu()"></i>
+
+            <nav class="navbar" id="navbar">
+                <a href="{{ url_for('recipes.home') }}">
+                    Recipes
+                    <i class='bx bx-bowl-hot'></i>
+                </a>
+                {% if current_user.admin %}
+                <a href="{{ url_for('ingredients.home') }}">
+                    Ingredients
+                    <i class='bx bx-baguette'></i>
+                </a>
+                <a href="{{ url_for('menu.home') }}">
+                    My menu
+                    <i class='bx bx-food-menu'></i>
+                </a>
+                <a href="#">
+                    Shopping list
+                    <i class='bx bx-list-ol'></i>
+                </a>
+                {% endif %}
+            </nav>
+            {% if current_user.is_authenticated %}
+            <i class='bx bx-user-check user-icon' id="user-icon"
+                onClick="toggleUserMenu()"></i>
+            {% else %}
+            <i class='bx bx-user-x user-icon' id="user-icon"
+                onClick="toggleUserMenu()"></i>
+            {% endif %}
+
+        </div>
+    </header>
+    <div class="wrapper">
+        <div class="user-menu" id="user-menu">
+            {% if current_user.is_authenticated %}
+            <span>Logged in as {{ current_user.email }}</span>
+            <a href="#">
+                Settings
+                <i class='bx bx-cog'></i>
+            </a>
+            <a href="{{ url_for('auth.logout') }}">
+                Log out
+                <i class='bx bx-log-out'></i>
+            </a>
+            {% else %}
+            <a href="{{ url_for('auth.oauth2_authorize',
+                    provider='google') }}">
+                Log in with Google
+                <i class='bx bxl-google'></i>
+            </a>
+            {% endif %}
+        </div>
+        <div class="container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                    <div class="flash {{ category }}">
+                        <span>
+                            {{ message | safe}}
+                        </span>
+                        <span class="flash-close" onClick="dismiss(this)">
+                            &times;
+                        </span>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            {% block body %}{% endblock %}
+        </div>
+    </div>
+
+    <script src="{{url_for('static', filename='scripts.js')}}"></script>
+</body>
+
+</html>

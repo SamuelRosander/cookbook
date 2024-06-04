@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+{% block body %}
+
+
+<div class="heading-grid">
+    <a href="{{ url_for('ingredients.home') }}" class="btn icon">
+        <i class='bx bx-arrow-back'></i>
+    </a>
+    <h3>{{ ingredient.name }}</h3>
+    <a href="{{ url_for('ingredients.edit', ingredient_id=ingredient.id) }}"
+    class="btn icon">
+        <i class='bx bx-edit-alt' ></i>
+    </a>
+</div>
+
+{% if ingredient.recipes %}
+Used in
+<ul>
+    {% for recipe in ingredient.recipes %}
+    <li>
+        <a href="{{ url_for('recipes.recipe', 
+                recipe_id=recipe.recipe_id) }}" class="text-color">
+            {{ recipe.recipe.name }}
+        </a>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+Not used in any recipes
+{% endif %}
+
+{% endblock %}

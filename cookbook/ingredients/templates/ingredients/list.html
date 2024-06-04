@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<h3>Add ingredient</h3>
+
+<form method="post" action="" class="flex" novalidate>
+    {{ form.hidden_tag() }}
+    {{ form.name(autocomplete="off", id="ingredient_name_input", autofocus=true, placeholder="Add new ingredient...", class="form error" if form.name.errors else "form") }}
+    {{ form.submit(class="btn flex-0 mt-0") }}
+</form>
+
+<h3>All ingredients</h3>
+<div id="ingredients-container"></div>
+
+<script>
+    window.onload = function() {
+        let ingredientContainer = document.getElementById("ingredients-container");
+        let ingredients = {{ ingredients | tojson }};
+        
+        document.getElementById("ingredient_name_input").addEventListener("input", function(e) {
+            showIngredients(this.value.toLowerCase());
+        });
+
+        function showIngredients(filter="") {
+            let newContent = "<ul>";
+
+            for (let i=0; i<ingredients.length; i++) {
+                if (ingredients[i].name.toLowerCase().includes(filter)) {
+                    let url = "{{ url_for('ingredients.home') }}" + ingredients[i].id + "/";
+                    newContent += "<li><a href='" + url + "' class='text-color'>" + ingredients[i].name + "</a></li>";
+                }
+            }
+
+            newContent += "</ul>"
+            ingredientContainer.innerHTML = newContent;
+        }
+
+        showIngredients();
+    }
+</script>
+
+{% endblock %}
