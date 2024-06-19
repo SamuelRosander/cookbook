@@ -3,15 +3,51 @@
 
 
 <div class="heading-grid">
-    <a href="{{ url_for('ingredients.home') }}" class="btn icon">
+    <a href="{{ url_for('ingredients.home') }}" class="heading-icon">
         <i class='bx bx-arrow-back'></i>
     </a>
     <h3>{{ ingredient.name }}</h3>
-    <a href="{{ url_for('ingredients.edit', ingredient_id=ingredient.id) }}"
-    class="btn icon">
-        <i class='bx bx-edit-alt' ></i>
-    </a>
+    <button id="heading-menu-btn" class="btn invis heading-icon"
+            onClick="toggleHeadingMenu()">
+        <i class='bx bx-dots-horizontal'></i>
+    </button>
+
+    <div id="heading-menu" class="invisible">
+        <button class="btn invis" onclick="changeHeading()">
+            Edit
+            <i class='bx bx-edit-alt' ></i>
+        </button>
+        <button class="btn delete" onClick="confirmDelete('{{ ingredient.name }}',
+            '{{ url_for('ingredients.delete', 
+                ingredient_id=ingredient.id) }}')">
+            Delete
+            <i class='bx bx-trash'></i>
+        </button>
+    </div>
 </div>
+
+<form method="POST" action="{{ url_for('ingredients.edit', 
+            ingredient_id=ingredient.id) }}"
+        class="heading-grid hidden" id="heading-form">
+    {{ form.hidden_tag() }}
+
+    <button type="button" class="btn mb-0" onclick="changeHeading()" 
+            title="Cancel">
+        <span>&times;</span>
+    </button>
+
+    {{ form.name(class="form", value=ingredient.name) }}
+        
+    <button type="submit" class="btn color mb-0" title="Save">
+        <i class='bx bx-save'></i>
+    </button>
+
+    {% if form.name.errors %}
+        <div class="form-error-label">
+            {{ form.name.errors[0] }}
+        </div>
+    {% endif %}
+</form>
 
 {% if ingredient.recipes %}
 Used in

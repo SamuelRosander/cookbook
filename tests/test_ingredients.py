@@ -32,34 +32,38 @@ def test_add(client, app):
         assert Ingredient.query.first().name == "testingredient2"
 
 
+def test_ingredient(client, app):
+    with app.test_request_context():
+        login_user(db.session.get(User, 1))
+        client.post("/ingredients/", data={"name": "testingredient1"})
+
+        response = client.get("/ingredients/1/")
+        assert response.status_code == 200
+        assert b"testingredient1" in response.data
+
+        logout_user()
+
+        response = client.get("/ingredients/1/")
+        assert response.status_code == 401
+
+
 def test_edit(client, app):
     with app.test_request_context():
         login_user(db.session.get(User, 1))
 
         client.post("/ingredients/", data={"name": "testingredient1"})
 
-        response = client.get("/ingredients/1/edit/")
-        assert response.status_code == 200
-        assert b"<h3>Edit ingredient</h3>" in response.data
-        assert b'value="testingredient1"' in response.data
-
         client.post("/ingredients/1/edit/",
                     data={"name": "testingredient1edit"})
 
-        response = client.get("/ingredients/1/edit/")
+        response = client.get("/ingredients/1/")
         assert b'value="testingredient1edit"' in response.data
-        assert client.get("/ingredients/2/edit/").status_code == 404
+        assert client.get("/ingredients/2/").status_code == 404
 
         logout_user()
 
-        response = client.get("/ingredients/1/edit/")
-        assert response.status_code == 401
-
         client.post("/ingredients/1/edit/",
                     data={"name": "testingredient1edit2"})
-
-        response = client.get("/ingredients/1/edit/")
-        assert response.status_code == 401
 
 
 def test_delete(client, app):

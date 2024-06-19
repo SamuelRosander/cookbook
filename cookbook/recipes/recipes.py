@@ -14,7 +14,7 @@ bp = Blueprint('recipes', __name__, url_prefix='/recipes',
 def home():
     if current_user.is_authenticated:
         recipes = Recipe.query.filter(
-            (Recipe.deleted == False) &
+            (Recipe.deleted.is_(False)) &
             ((Recipe.owner == current_user) | (Recipe.public))).order_by(
             Recipe.id).all()
     else:

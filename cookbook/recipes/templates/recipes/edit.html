@@ -3,14 +3,10 @@
 
 <div class="heading-grid">
     <a href="{{ url_for('recipes.recipe', 
-            recipe_id=recipe.id) }}" class="btn icon">
+            recipe_id=recipe.id) }}" class="heading-icon">
         <i class='bx bx-arrow-back'></i>
     </a>
     <h3>Edit recipe</h3>
-    <a class="btn icon delete" onClick="confirmDelete('{{ recipe.name }}',
-        '{{ url_for('recipes.delete', recipe_id=recipe.id) }}')">
-        <i class='bx bx-trash'></i>
-    </a>
 </div>
 
 <form method="post" action="" novalidate>

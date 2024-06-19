@@ -1,5 +1,4 @@
-from flask import Blueprint, render_template, flash, url_for, redirect, \
-    abort, request
+from flask import Blueprint, render_template, flash, url_for, redirect, abort
 from flask_login import current_user, login_required
 from cookbook.forms import IngredientForm
 from cookbook.models import Ingredient
@@ -36,11 +35,13 @@ def ingredient(ingredient_id):
     if not ingredient:
         abort(404)
 
+    form = IngredientForm()
+
     return render_template("ingredients/ingredient.html",
-                           ingredient=ingredient)
+                           ingredient=ingredient, form=form)
 
 
-@bp.route("/<int:ingredient_id>/edit/", methods=["GET", "POST"])
+@bp.route("/<int:ingredient_id>/edit/", methods=["POST"])
 @login_required
 def edit(ingredient_id):
     ingredient = db.session.get(Ingredient, ingredient_id)
@@ -56,12 +57,11 @@ def edit(ingredient_id):
     if form.validate_on_submit():
         ingredient.name = form.name.data
         db.session.commit()
-        flash("Ingredient has been updated", "succes")
-    elif request.method == "GET":
-        form.name.data = ingredient.name
+    else:
+        flash(form.name.errors[0], "error")
 
-    return render_template(
-        "ingredients/edit.html", ingredient=ingredient, form=form)
+    return redirect(
+        url_for("ingredients.ingredient", ingredient_id=ingredient.id))
 
 
 @bp.route("/<int:ingredient_id>/delete/")

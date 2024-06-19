@@ -2,15 +2,28 @@
 {% block body %}
 
 <div class="heading-grid">
-    <a href="{{ url_for('recipes.home')}}" class="btn icon">
+    <a href="{{ url_for('recipes.home')}}" class="heading-icon">
         <i class='bx bx-arrow-back'></i>
     </a>
     <h3>{{ recipe.name }}</h3>
     {% if recipe.owner == current_user %}
-    <a href="{{ url_for('recipes.edit', recipe_id=recipe.id) }}" 
-        class="btn icon">
-        <i class='bx bx-edit-alt' ></i>
-    </a>
+
+    <button id="heading-menu-btn" class="btn invis heading-icon"
+            onClick="toggleHeadingMenu()">
+        <i class='bx bx-dots-horizontal'></i>
+    </button>
+
+    <div id="heading-menu" class="invisible">
+        <a href="{{ url_for('recipes.edit', recipe_id=recipe.id) }}">
+            Edit
+            <i class='bx bx-edit-alt' ></i>
+        </a>
+        <button class="btn delete" onClick="confirmDelete('{{ recipe.name }}',
+                '{{ url_for('recipes.delete', recipe_id=recipe.id) }}')">
+            Delete
+            <i class='bx bx-trash'></i>
+        </button>
+    </div>
     {% else %}
     <div></div>
     {% endif %}
